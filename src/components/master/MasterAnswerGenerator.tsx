@@ -2,6 +2,7 @@ import { useAIResponseStore } from '../../store/aiResponseStore';
 import { motion } from 'framer-motion';
 import { Sparkles, Copy, Share, Download, Check } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { useState } from 'react';
 
 export default function MasterAnswerGenerator() {
   const { masterAnswer } = useAIResponseStore();
@@ -53,5 +54,3 @@ export default function MasterAnswerGenerator() {
     </motion.div>
   );
 }
-
-import { useState } from 'react';

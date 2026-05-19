@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, Paperclip, BookTemplate, Bookmark, Send, Sparkles, Loader2 } from 'lucide-react';
+import { Mic, Paperclip, Library, Bookmark, Send, Sparkles, Loader2 } from 'lucide-react';
 import { useWorkspaceStore } from '../../store/workspaceStore';
 import { useAIDispatch } from '../../hooks/useAIDispatch';
 import { useAIResponseStore } from '../../store/aiResponseStore';

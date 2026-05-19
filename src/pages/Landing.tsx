@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Zap, Shield, Cpu, Layout, History, BarChart, Settings, ArrowRight, Play } from 'lucide-react';
+import { Zap, Shield, Cpu, LayoutDashboard, History, BarChart, Settings, ArrowRight, Play } from 'lucide-react';
 
 export default function Landing() {
   return (
@@ -93,10 +93,10 @@ export default function Landing() {
               { icon: Zap, title: "Simul-Prompting", desc: "Fire one prompt to multiple AI models simultaneously with zero latency." },
               { icon: Shield, title: "AI Judge", desc: "Our proprietary judge model scores each response for quality and accuracy." },
               { icon: Cpu, title: "Master Synthesis", desc: "Generate one perfect answer synthesized from the best elements of all outputs." },
-              { icon: Layout, title: "Glass UI", desc: "Beautiful, distraction-free interface optimized for high-performance workflows." },
+              { icon: LayoutDashboard, title: "Glass UI", desc: "Beautiful, distraction-free interface optimized for high-performance workflows." },
               { icon: History, title: "Full History", desc: "Restore any past session instantly with full context and scoring metrics preserved." },
               { icon: BarChart, title: "Advanced Metrics", desc: "Track token usage, latency, and composite scores for every provider." },
-              { icon: Layout, title: "Multi-Modal", desc: "Upload images, docs, and code snippets to all models in one go." },
+              { icon: LayoutDashboard, title: "Multi-Modal", desc: "Upload images, docs, and code snippets to all models in one go." },
               { icon: Settings, title: "Custom Keys", desc: "Bring your own API keys for Gemini, Groq, and OpenRouter." }
             ].map((f, i) => (
               <div key={i} className="glass-card p-8 group">

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Zap, Layout, History, BarChart, Settings, Plus, LogOut, ChevronLeft } from 'lucide-react';
+import { Zap, LayoutDashboard, History, BarChart, Settings, Plus, LogOut, ChevronLeft } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 
@@ -7,8 +7,8 @@ export default function Sidebar() {
   const location = useLocation();
   
   const navItems = [
-    { icon: Layout, label: 'Dashboard', path: '/dashboard' },
-    { icon: Layout, label: 'Workspace', path: '/workspace' },
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
+    { icon: LayoutDashboard, label: 'Workspace', path: '/workspace' },
     { icon: History, label: 'History', path: '/history' },
     { icon: BarChart, label: 'Analytics', path: '/analytics' },
   ];

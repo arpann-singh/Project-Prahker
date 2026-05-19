@@ -1,5 +1,5 @@
 import Sidebar from '../components/layout/Sidebar';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Key, User, Bell, CreditCard, Shield, Globe, Moon, Save } from 'lucide-react';
 import { useState } from 'react';
 
@@ -118,5 +118,3 @@ export default function Settings() {
     </div>
   );
 }
-
-import { AnimatePresence } from 'framer-motion';

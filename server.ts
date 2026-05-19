@@ -5,6 +5,7 @@ import * as dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
 import { Groq } from "groq-sdk";
 import OpenAI from "openai";
+import axios from "axios";
 
 dotenv.config();
 
