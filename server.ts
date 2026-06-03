@@ -6,6 +6,7 @@ import { GoogleGenAI } from "@google/genai";
 import { Groq } from "groq-sdk";
 import OpenAI from "openai";
 import axios from "axios";
+import { CohereClient } from "cohere-ai";
 
 dotenv.config();
 
@@ -31,11 +32,15 @@ const openRouter = new OpenAI({
   },
 });
 
+const cohere = new CohereClient({
+  token: process.env.COHERE_API_KEY || " ",
+});
+
 // Scoring Utility
 const calculateScores = (content: string) => {
   const wordCount = content.split(/\s+/).length;
   const lengthScore = Math.min(10, (Math.log(wordCount + 1) / Math.log(500)) * 10);
-  
+
   const structureScore = (
     (content.match(/#/g) || []).length * 2 +
     (content.match(/\* /g) || []).length * 1 +
@@ -68,13 +73,13 @@ app.post("/api/ai/dispatch", async (req, res) => {
     try {
       if (provider === "gemini") {
         const result = await genAI.models.generateContent({
-          model: "gemini-3-flash-preview",
+          model: "gemini-2.5-flash",
           contents: prompt,
         });
         const content = result.text || "";
         return {
           provider,
-          model: "gemini-3-flash-preview",
+          model: "gemini-2.5-flash",
           content,
           latencyMs: Date.now() - startTime,
           scores: calculateScores(content),
@@ -101,6 +106,39 @@ app.post("/api/ai/dispatch", async (req, res) => {
         return {
           provider,
           model: "deepseek/deepseek-r1:free",
+          content,
+          latencyMs: Date.now() - startTime,
+          scores: calculateScores(content),
+        };
+      } else if (provider === "cohere") {
+        // 1. Fetch available models first
+        const modelsRes = await fetch("https://api.cohere.com/v1/models", {
+          headers: { "Authorization": `Bearer ${process.env.COHERE_API_KEY}` }
+        });
+        const modelsData = await modelsRes.json();
+
+        // 2. Automatically pick the first model that supports 'chat'
+        const chatModel = modelsData.models.find((m: any) => m.endpoints.includes("chat"))?.name || "command-r-08-2025";
+
+        // 3. Make the call
+        const response = await fetch("https://api.cohere.ai/v1/chat", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${process.env.COHERE_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            message: prompt,
+            model: chatModel,
+          }),
+        });
+
+        const data = await response.json();
+        const content = data.text || "";
+
+        return {
+          provider,
+          model: chatModel, // Displays whichever model was dynamically chosen
           content,
           latencyMs: Date.now() - startTime,
           scores: calculateScores(content),
@@ -184,7 +222,7 @@ app.post("/api/ai/synthesize", async (req, res) => {
     `;
 
     const result = await genAI.models.generateContent({
-      model: "gemini-3.1-pro-preview",
+      model: "gemini-2.5-flash", // <--- UPDATE THIS LINE
       contents: promptText,
     });
 

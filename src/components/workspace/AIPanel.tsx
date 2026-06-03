@@ -18,16 +18,17 @@ const PROVIDER_CONFIG: Record<string, any> = {
   groq: { name: 'Groq', color: '#F55036', logo: 'Q' },
   openrouter: { name: 'DeepSeek', color: '#6C63FF', logo: 'D' },
   ollama: { name: 'Ollama', color: '#FFFFFF', logo: 'O' },
+  cohere: { name: 'Cohere', color: '#39594D', logo: 'C' },
 };
 
 export default function AIPanel({ provider, model, content, isLoading, latencyMs, scores }: AIPanelProps) {
   const config = PROVIDER_CONFIG[provider] || { name: provider, color: '#666', logo: '?' };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white/5 border border-white/10 rounded-2xl flex flex-col h-[500px] relative overflow-hidden group shadow-lg"
+      className="bg-white/5 border border-white/10 rounded-2xl flex flex-col h-full min-h-[500px] relative overflow-hidden group shadow-lg"
     >
       {/* Header */}
       <div className="flex items-center justify-between p-3 border-b border-white/10 bg-white/[0.02] backdrop-blur-md sticky top-0 z-10">
@@ -102,9 +103,9 @@ export default function AIPanel({ provider, model, content, isLoading, latencyMs
           {scores && (
             <div className="flex items-center gap-2">
               <div className="h-1 w-16 bg-white/5 rounded-full overflow-hidden">
-                <div 
-                  className="h-full rounded-full transition-all duration-1000" 
-                  style={{ width: `${(scores.composite || 0) * 10}%`, backgroundColor: config.color }} 
+                <div
+                  className="h-full rounded-full transition-all duration-1000"
+                  style={{ width: `${(scores.composite || 0) * 10}%`, backgroundColor: config.color }}
                 />
               </div>
               <span className="text-[10px] font-bold text-[#10B981]">{(scores.composite || 0).toFixed(1)}</span>
@@ -119,7 +120,7 @@ export default function AIPanel({ provider, model, content, isLoading, latencyMs
       {/* Progress Bar during generation */}
       {isLoading && (
         <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white/5 overflow-hidden">
-          <motion.div 
+          <motion.div
             initial={{ x: '-100%' }}
             animate={{ x: '100%' }}
             transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}

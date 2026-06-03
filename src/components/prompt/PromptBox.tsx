@@ -10,6 +10,7 @@ const PROVIDERS = [
   { id: 'groq', name: 'Groq', color: '#F55036' },
   { id: 'openrouter', name: 'DeepSeek', color: '#6C63FF' },
   { id: 'ollama', name: 'Ollama', color: '#FFFFFF' },
+  { id: 'cohere', name: 'Cohere', color: '#39594D' },
 ];
 
 export default function PromptBox() {
@@ -41,25 +42,24 @@ export default function PromptBox() {
           <div className="flex items-center gap-4 border-b border-white/5 pb-4">
             <div className="flex gap-2">
               {PROVIDERS.map((p) => (
-                <button 
+                <button
                   key={p.id}
                   onClick={() => toggleProvider(p.id)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
-                    currentWorkspace?.selectedProviders.includes(p.id)
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${currentWorkspace?.selectedProviders.includes(p.id)
                       ? 'bg-white/10 text-white border border-white/10 shadow-sm'
                       : 'text-white/20 hover:text-white/40'
-                  }`}
+                    }`}
                 >
-                  <div 
-                    className="w-2 h-2 rounded-full" 
-                    style={{ backgroundColor: currentWorkspace?.selectedProviders.includes(p.id) ? p.color : '#333' }} 
+                  <div
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: currentWorkspace?.selectedProviders.includes(p.id) ? p.color : '#333' }}
                   />
                   {p.name}
                 </button>
               ))}
             </div>
             <div className="h-4 w-[1px] bg-white/10" />
-            <button 
+            <button
               onClick={() => setOptimizerActive(!optimizerActive)}
               className={`flex items-center gap-2 text-[10px] uppercase tracking-widest font-bold transition-all ${optimizerActive ? 'text-[#00D4FF]' : 'text-white/20'}`}
             >
@@ -67,7 +67,7 @@ export default function PromptBox() {
               Optimizer
             </button>
           </div>
-  
+
           {/* Textarea */}
           <div className="relative">
             <textarea
@@ -79,7 +79,7 @@ export default function PromptBox() {
               className="w-full bg-transparent border-none focus:ring-0 text-white placeholder:text-white/20 resize-none min-h-[64px] font-medium"
             />
           </div>
-  
+
           {/* Toolbar */}
           <div className="flex justify-between items-center mt-2">
             <div className="flex gap-4">
@@ -91,12 +91,12 @@ export default function PromptBox() {
               </button>
               <div className="h-4 w-[1px] bg-white/10" />
               <div className="flex items-center gap-2">
-                 <span className="text-[11px] px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-white/60 uppercase tracking-tighter">Gemini</span>
-                 <span className="text-[11px] px-2 py-0.5 rounded-full border border-[#6C63FF]/40 bg-[#6C63FF]/10 text-[#6C63FF] uppercase tracking-tighter font-bold">+2 Models</span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full border border-white/10 bg-white/5 text-white/60 uppercase tracking-tighter">Gemini</span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full border border-[#6C63FF]/40 bg-[#6C63FF]/10 text-[#6C63FF] uppercase tracking-tighter font-bold">+2 Models</span>
               </div>
             </div>
-            
-            <button 
+
+            <button
               onClick={dispatchToAllAIs}
               disabled={isGenerating || !currentWorkspace?.currentPrompt}
               className="px-4 py-2 bg-[#6C63FF] text-white rounded-lg text-xs font-bold flex items-center gap-2 shadow-[0_4px_12px_rgba(108,99,255,0.3)] hover:scale-[1.02] transition-transform active:scale-95 disabled:opacity-50 disabled:scale-100"
