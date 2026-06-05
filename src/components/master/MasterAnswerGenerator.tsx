@@ -9,13 +9,55 @@ export default function MasterAnswerGenerator() {
   const [copied, setCopied] = useState(false);
 
   if (!masterAnswer) return (
-    <div className="text-center py-12 text-white/20 italic">Master Answer is being synthesized...</div>
+    <div className="text-center py-12 text-slate-400/60 italic font-semibold">Master Answer is being synthesized...</div>
   );
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(masterAnswer);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const downloadMarkdown = () => {
+    if (!masterAnswer) return;
+    const blob = new Blob([masterAnswer], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `echo_lens_master_answer_${Date.now()}.md`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const downloadJSON = () => {
+    if (!masterAnswer) return;
+    const currentState = useAIResponseStore.getState();
+    const data = {
+      source: 'AI Echo Lens Orchestrator',
+      timestamp: new Date().toISOString(),
+      masterAnswer,
+      judgeResult: currentState.judgeResult,
+      responses: Object.entries(currentState.responses).reduce((acc, [p, r]: any) => {
+        acc[p] = {
+          model: r.model,
+          content: r.content,
+          latencyMs: r.latencyMs,
+          scores: r.scores
+        };
+        return acc;
+      }, {} as any)
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `echo_lens_session_bundle_${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -30,24 +72,42 @@ export default function MasterAnswerGenerator() {
             <Sparkles className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-display font-bold text-white tracking-tight">Master Answer</h2>
-            <p className="text-xs font-bold uppercase tracking-widest text-white/30">Synthesized Definitive Version</p>
+            <h2 className="text-xl font-display font-bold text-slate-800 tracking-tight">Master Answer</h2>
+            <p className="text-xs font-bold uppercase tracking-widest text-slate-400">Synthesized Definitive Version</p>
           </div>
         </div>
         <div className="flex gap-2">
           <button 
             onClick={copyToClipboard}
-            className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-[#6C63FF] hover:border-[#6C63FF]/30 transition-all shadow-sm"
+            title="Copy Master Answer"
+            className="p-2.5 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-[#6C63FF] hover:border-[#6C63FF]/30 transition-all shadow-sm"
           >
             {copied ? <Check className="w-5 h-5 text-[#10B981]" /> : <Copy className="w-5 h-5" />}
           </button>
-          <button className="p-2.5 bg-white/5 border border-white/10 rounded-xl text-white/40 hover:text-white transition-all"><Download className="w-5 h-5" /></button>
+          
+          <button 
+            onClick={downloadMarkdown}
+            title="Download MD"
+            className="p-2.5 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-[#6C63FF] hover:border-[#6C63FF]/30 transition-all shadow-sm flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider"
+          >
+            <Download className="w-4 h-4 text-emerald-500" />
+            MD
+          </button>
+
+          <button 
+            onClick={downloadJSON}
+            title="Export JSON metadata"
+            className="p-2.5 bg-white border border-slate-100 rounded-xl text-slate-400 hover:text-[#6C63FF] hover:border-[#6C63FF]/30 transition-all shadow-sm flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider"
+          >
+            <Download className="w-4 h-4 text-[#00D4FF]" />
+            JSON
+          </button>
         </div>
       </div>
 
-      <div className="bg-[#0A0A0F] p-8 rounded-3xl border border-white/10 shadow-inner relative overflow-hidden">
+      <div className="bg-slate-50/50 p-8 rounded-3xl border border-slate-100/80 shadow-inner relative overflow-hidden">
         <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-[#6C63FF] to-[#00D4FF]" />
-        <div className="prose prose-invert max-w-none prose-sm prose-p:leading-relaxed prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/5">
+        <div className="prose prose-slate max-w-none prose-sm prose-p:leading-relaxed prose-pre:bg-slate-105 prose-pre:border prose-pre:border-slate-150">
           <ReactMarkdown>{masterAnswer}</ReactMarkdown>
         </div>
       </div>

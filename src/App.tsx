@@ -12,28 +12,25 @@ import Dashboard from './pages/Dashboard';
 import History from './pages/History';
 import Settings from './pages/Settings';
 import { useEffect, useState } from 'react';
-import { supabase } from './lib/supabase';
+import { auth } from './lib/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 export default function App() {
-  const [session, setSession] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
       setLoading(false);
     });
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-    });
-
-    return () => subscription.unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   if (loading) {
     return (
-      <div className="flex bg-[#0A0A0F] items-center justify-center min-h-screen">
+      <div className="flex bg-[#F1F5F9] items-center justify-center min-h-screen">
         <div className="w-12 h-12 border-4 border-[#6C63FF] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -41,15 +38,15 @@ export default function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-[#0A0A0F] text-white selection:bg-[#6C63FF]/30">
+      <div className="min-h-screen bg-[#F6F8FC] text-slate-800 selection:bg-[#6C63FF]/15">
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<Landing />} />
-            <Route path="/login" element={!session ? <Login /> : <Navigate to="/dashboard" />} />
-            <Route path="/signup" element={!session ? <Signup /> : <Navigate to="/dashboard" />} />
-            <Route path="/dashboard" element={session ? <Dashboard /> : <Navigate to="/login" />} />
-            <Route path="/history" element={session ? <History /> : <Navigate to="/login" />} />
-            <Route path="/settings" element={session ? <Settings /> : <Navigate to="/login" />} />
+            <Route path="/login" element={!user ? <Login /> : <Navigate to="/dashboard" />} />
+            <Route path="/signup" element={!user ? <Signup /> : <Navigate to="/dashboard" />} />
+            <Route path="/dashboard" element={user ? <Dashboard /> : <Navigate to="/login" />} />
+            <Route path="/history" element={user ? <History /> : <Navigate to="/login" />} />
+            <Route path="/settings" element={user ? <Settings /> : <Navigate to="/login" />} />
           </Routes>
         </AnimatePresence>
       </div>

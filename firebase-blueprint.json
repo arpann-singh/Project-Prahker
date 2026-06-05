@@ -1,0 +1,86 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Unique identifier for the user" },
+        "email": { "type": "string", "format": "email", "description": "User's email address" },
+        "displayName": { "type": "string", "description": "User's display name" },
+        "photoURL": { "type": "string", "description": "User's profile picture URL" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp when the user was created" },
+        "tokensUsed": { "type": "number", "description": "Number of tokens consumed by the user today" },
+        "tokenLimit": { "type": "number", "description": "Daily allowance of tokens for the user" },
+        "tokenResetTime": { "type": "string", "format": "date-time", "description": "Timestamp when token usage will reset" },
+        "monthlyTokensUsed": { "type": "number", "description": "Cumulative tokens used in the current calendar month" },
+        "monthlyTokenLimit": { "type": "number", "description": "Monthly free tier token allowance" },
+        "monthlyTokenResetTime": { "type": "string", "format": "date-time", "description": "Timestamp when monthly usage resets" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Workspace": {
+      "title": "Workspace",
+      "description": "A user's workspace containing settings and prompts",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string", "description": "Owner of the workspace" },
+        "name": { "type": "string" },
+        "selectedProviders": { "type": "array", "items": { "type": "string" } },
+        "currentPrompt": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "name"]
+    },
+    "Session": {
+      "title": "Session",
+      "description": "A single prompt-response comparison session",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "workspaceId": { "type": "string" },
+        "userId": { "type": "string" },
+        "prompt": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "judgeResult": { "type": "object" },
+        "masterAnswer": { "type": "string" }
+      },
+      "required": ["workspaceId", "userId", "prompt", "timestamp"]
+    },
+    "Response": {
+      "title": "Response",
+      "description": "A specific response from an AI provider",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "sessionId": { "type": "string" },
+        "providerId": { "type": "string" },
+        "model": { "type": "string" },
+        "content": { "type": "string" },
+        "latencyMs": { "type": "number" },
+        "scores": { "type": "object" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["sessionId", "providerId", "content", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "workspaces/{workspaceId}": {
+      "schema": "Workspace",
+      "description": "User specific workspaces"
+    },
+    "sessions/{sessionId}": {
+      "schema": "Session",
+      "description": "History of AI comparison sessions"
+    },
+    "sessions/{sessionId}/responses/{responseId}": {
+      "schema": "Response",
+      "description": "Individual AI outputs for a session"
+    }
+  }
+}

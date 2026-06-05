@@ -1,0 +1,107 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Global safety net: Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // --- Validation Blueprints ---
+    
+    function isValidUser(data) {
+      let requiredFields = ['uid', 'email', 'createdAt'];
+      return data.keys().hasAll(requiredFields) &&
+             data.keys().size() <= 15 && // allow optional fields + daily + monthly token fields
+             data.uid == request.auth.uid &&
+             data.email is string && data.email.size() <= 256 &&
+             data.createdAt == request.time;
+    }
+
+    function isValidWorkspace(data) {
+      let requiredFields = ['userId', 'name', 'updatedAt'];
+      return data.keys().hasAll(requiredFields) &&
+             data.keys().size() <= 6 &&
+             data.userId == request.auth.uid &&
+             data.name is string && data.name.size() <= 100 &&
+             data.updatedAt == request.time;
+    }
+
+    function isValidSession(data) {
+      let requiredFields = ['workspaceId', 'userId', 'prompt', 'timestamp'];
+      return data.keys().hasAll(requiredFields) &&
+             data.keys().size() <= 8 &&
+             data.userId == request.auth.uid &&
+             data.prompt is string && data.prompt.size() <= 5000 &&
+             data.timestamp == request.time;
+    }
+
+    function isValidResponse(data) {
+      let requiredFields = ['sessionId', 'providerId', 'content', 'timestamp'];
+      return data.keys().hasAll(requiredFields) &&
+             data.keys().size() <= 10 &&
+             data.content is string && data.content.size() <= 32000 &&
+             data.timestamp == request.time;
+    }
+
+    // --- Match Groups ---
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && 
+                      isValidUser(request.resource.data) &&
+                      request.resource.data.uid == resource.data.uid &&
+                      request.resource.data.createdAt == resource.data.createdAt;
+    }
+
+    match /workspaces/{workspaceId} {
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && 
+                      isValidId(workspaceId) && 
+                      isValidWorkspace(request.resource.data);
+      allow update: if isSignedIn() && 
+                      isValidId(workspaceId) &&
+                      resource.data.userId == request.auth.uid &&
+                      isValidWorkspace(request.resource.data) &&
+                      request.resource.data.userId == resource.data.userId;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    match /sessions/{sessionId} {
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && 
+                      isValidId(sessionId) && 
+                      isValidSession(request.resource.data) &&
+                      exists(/databases/$(database)/documents/workspaces/$(request.resource.data.workspaceId));
+      allow update: if isSignedIn() && 
+                      resource.data.userId == request.auth.uid &&
+                      isValidSession(request.resource.data) &&
+                      request.resource.data.userId == resource.data.userId;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+
+      match /responses/{responseId} {
+        allow list: if isSignedIn() && get(/databases/$(database)/documents/sessions/$(sessionId)).data.userId == request.auth.uid;
+        allow get: if isSignedIn() && get(/databases/$(database)/documents/sessions/$(sessionId)).data.userId == request.auth.uid;
+        allow create: if isSignedIn() && 
+                        isValidId(responseId) && 
+                        isValidResponse(request.resource.data) &&
+                        get(/databases/$(database)/documents/sessions/$(sessionId)).data.userId == request.auth.uid;
+      }
+    }
+  }
+}

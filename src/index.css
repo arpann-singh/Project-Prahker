@@ -9,28 +9,34 @@
 
 @layer base {
   body {
-    @apply bg-[#0A0A0F] text-[#E0E0E6];
+    @apply bg-[#F6F8FC] text-slate-800 selection:bg-[#6C63FF]/15;
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(108, 99, 255, 0.07) 0px, transparent 45%),
+      radial-gradient(at 100% 0%, rgba(0, 212, 255, 0.07) 0px, transparent 45%),
+      radial-gradient(at 50% 100%, rgba(108, 99, 255, 0.03) 0px, transparent 45%),
+      url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.012'/%3E%3C/svg%3E");
+    background-attachment: fixed;
   }
 }
 
 @utility glass {
-  @apply bg-white/5 backdrop-blur-md border border-white/10;
+  @apply bg-white/40 backdrop-blur-xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.02)];
 }
 
 @utility glass-card {
-  @apply glass rounded-2xl transition-all duration-300 hover:border-white/20 hover:bg-white/10;
+  @apply glass rounded-2xl transition-all duration-500 hover:border-white/80 hover:bg-white/60 hover:shadow-[0_16px_40px_rgba(108,99,255,0.06)];
 }
 
 .electric-glow {
-  box-shadow: 0 0 15px rgba(108, 99, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(108, 99, 255, 0.15);
 }
 
 .electric-glow-strong {
-  box-shadow: 0 0 15px rgba(108, 99, 255, 0.4);
+  box-shadow: 0 12px 35px rgba(108, 99, 255, 0.25);
 }
 
 .electric-glow-cyan {
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 212, 255, 0.15);
 }
 
 /* Typing animation */
@@ -49,6 +55,6 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full hover:bg-white/20;
+  @apply bg-slate-200 rounded-full hover:bg-slate-300;
 }
 

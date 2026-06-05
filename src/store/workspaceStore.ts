@@ -7,6 +7,10 @@ interface Workspace {
   optimizedPrompt?: string;
   selectedProviders: string[];
   context: string[];
+  temperature?: number;
+  maxTokens?: number;
+  systemInstruction?: string;
+  evalGoal?: string;
 }
 
 interface WorkspaceState {
@@ -16,6 +20,7 @@ interface WorkspaceState {
   updatePrompt: (prompt: string) => void;
   toggleProvider: (provider: string) => void;
   addContext: (text: string) => void;
+  updateConfig: (config: Partial<Pick<Workspace, 'temperature' | 'maxTokens' | 'systemInstruction' | 'evalGoal'>>) => void;
 }
 
 export const useWorkspaceStore = create<WorkspaceState>((set) => ({
@@ -25,6 +30,10 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
     currentPrompt: '',
     selectedProviders: ['gemini', 'groq'],
     context: [],
+    temperature: 0.7,
+    maxTokens: 2048,
+    systemInstruction: 'You are a highly precise, context-aware AI assistant.',
+    evalGoal: 'Focus on technical depth, precise structure, and actionable code blocks.',
   },
   workspaces: [],
   setCurrentWorkspace: (workspace) => set({ currentWorkspace: workspace }),
@@ -48,6 +57,12 @@ export const useWorkspaceStore = create<WorkspaceState>((set) => ({
     set((state) => ({
       currentWorkspace: state.currentWorkspace
         ? { ...state.currentWorkspace, context: [...state.currentWorkspace.context, text] }
+        : null,
+    })),
+  updateConfig: (config) =>
+    set((state) => ({
+      currentWorkspace: state.currentWorkspace
+        ? { ...state.currentWorkspace, ...config }
         : null,
     })),
 }));

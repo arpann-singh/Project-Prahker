@@ -7,14 +7,13 @@ export default function AIPanelGrid() {
   const activeProviders = Object.keys(responses);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20 flex-1">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pb-20">
       <AnimatePresence>
         {activeProviders.length === 0 ? (
-          <motion.div
+          <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            // CHANGED: Replaced h-[400px] with h-full min-h-[400px]
-            className="lg:col-span-2 h-full min-h-[400px] flex flex-col items-center justify-center text-center p-12 border border-dashed border-white/10 rounded-3xl bg-white/[0.01]"
+            className="lg:col-span-2 h-[400px] flex flex-col items-center justify-center text-center p-12 border border-dashed border-white/10 rounded-3xl bg-white/[0.01]"
           >
             <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-6 shadow-inner">
               <div className="w-8 h-8 border border-white/20 rounded-lg animate-pulse bg-white/5" />
@@ -24,7 +23,7 @@ export default function AIPanelGrid() {
           </motion.div>
         ) : (
           activeProviders.map((provider) => (
-            <AIPanel
+            <AIPanel 
               key={provider}
               provider={provider}
               {...responses[provider]}
